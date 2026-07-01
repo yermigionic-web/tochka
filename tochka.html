@@ -80,8 +80,8 @@
   #roofZone{position:absolute;top:50%;left:0;width:100%;height:50%;overflow:hidden}
   /* 옥상 배경 확대 — 너른 배율이라 확대해도 안 커 보임 */
   #roofBg{position:absolute;inset:0;transform:scale(1.6);transform-origin:center bottom}
-  #i_player{left:8%;z-index:3;width:56px;height:120px;bottom:14%}
-  #i_hinagi{left:64%;z-index:2;opacity:0}
+  #i_player{left:-20%;z-index:3;width:56px;height:120px;bottom:14%}
+  #i_hinagi{left:64%;z-index:2;opacity:0;width:90px;height:180px;bottom:14%}
 
   #nameWrap{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);
     z-index:40;display:none;flex-direction:column;gap:13px;align-items:center;
@@ -316,6 +316,12 @@
 
   <!-- ========== [4] 프로필 ========== -->
   <div class="scene" id="s_profile">
+    <div class="dbox" id="kodaDbox">
+  <div class="dname" id="k_name"></div>
+  <div class="dtext" id="k_text"></div>
+  <div class="dhint">▼</div>
+  <div class="portrait" id="k_portrait"></div>
+</div>
     <div id="profileScene" class="layer"></div>
     <div id="tabs">
       <div class="tab active" data-tab="hinagi">灰凪</div>
@@ -500,11 +506,17 @@ function isay(name,text,portrait){
 let iStep=0;
 const iSeq=[
   ()=>isay('','옥상 문이, 잠겨 있었는데도 열려 있다.'),
+  ()=>{ $('i_player').style.transition='left 2.4s linear'; $('i_player').style.left='12%'; },
   ()=>isay('','바람이 없다. 그런데 물비린내가 난다.'),
   ()=>{ cue.classList.remove('show'); idbox.classList.remove('show');
-    $('i_player').style.left='45%';
-    setTimeout(()=>$('i_hinagi').style.opacity='1',1400);
-    setTimeout(()=>{ iStep=3; iSeq[3](); },2500); },
+  // 플레이어는 중앙으로, 배경과 하이나기는 왼쪽으로 밀림(=플레이어가 전진하는 효과)
+  $('i_player').style.left='42%';
+  $('roofBg').style.transition='transform 3.4s linear';
+  $('roofBg').style.transform='scale(1.6) translateX(-18%)';
+  $('i_hinagi').style.transition='left 3.4s linear,opacity 1s';
+  $('i_hinagi').style.left='58%';
+  setTimeout(()=>$('i_hinagi').style.opacity='1',800);
+  setTimeout(()=>{ iStep=3; iSeq[3](); },2600); },
   ()=>{ $('wind').volume=0; fadeAudio($('wind'),0.4,2200);
     isay('???','…왔네.',true); cue.classList.add('show'); },
   ()=>{ isay('???','네 이름은 뭐야?',true);
@@ -528,18 +540,18 @@ function confirmName(){
   playerName=v; $('nameWrap').classList.remove('show'); iStep=100;
   isay(playerName+'…','잊어버렸어? 나는, 네 여자친구야.',true);
   cue.classList.add('show');
-  $('s_intro').addEventListener('click',exitTogether,{once:true});
+  setTimeout(()=>{ $('s_intro').addEventListener('click',exitTogether,{once:true}); }, 300);
 }
 $('nameOk').addEventListener('click',confirmName);
 $('nameInput').addEventListener('keydown',e=>{ if(e.key==='Enter')confirmName(); });
 
 function exitTogether(){
   idbox.classList.remove('show'); iport.classList.remove('show'); cue.classList.remove('show');
-  // 둘이 함께 화면 오른쪽 밖으로 완전히 걸어나감
-  $('i_player').style.left='115%'; $('i_hinagi').style.left='125%';
-  // 완전히 사라진 뒤에 카메라 상승
-  setTimeout(()=>$('introCam').style.transform='translateY(50%)',3600);
-  setTimeout(showTitle,6600);
+  $('i_player').style.transition='left 3s linear';
+  $('i_hinagi').style.transition='left 3s linear';
+  $('i_player').style.left='130%'; $('i_hinagi').style.left='140%';
+  setTimeout(()=>$('introCam').style.transform='translateY(50%)',3400);
+  setTimeout(showTitle,6400);
 }
 function showTitle(){
   $('titleScreen').classList.add('show');
@@ -571,7 +583,7 @@ for(let i=1;i<=CUTS;i++){
   img.onerror=()=>{ d.innerHTML=`<div class="ph"><b>CUT ${i}</b>${file}</div>`; };
   img.src=REPO+file; cutLayer.appendChild(d);
 }
-let cIdx=0,cTimer=null,cRun=false; const CUT_MS=2000;
+let cIdx=0,cTimer=null,cRun=false; const CUT_MS=3000;
 function showCut(n){
   document.querySelectorAll('.cut').forEach(c=>c.classList.remove('on'));
   const c=$('cut'+n); if(c)c.classList.add('on');
@@ -752,7 +764,7 @@ function submitPw(){
   const raw=$('pwInput').value.trim(); if(!raw)return;
   const v=norm(raw);
   if(ANS_FALSE.map(norm).includes(v)){ erodeKoda(); }
-  else if(ANS_TRUE.map(norm).includes(v)){ revealTruth(); }
+  else if(ANS_TRUE.map(norm).includes(v)){ kodaMessage(); }
   else{ $('pwMsg').textContent='…그건 그녀의 이름이 아니야.'; }
 }
 $('pwOk').addEventListener('click',submitPw);
@@ -775,6 +787,34 @@ function revealTruth(){
   if(secretTab)secretTab.remove();
   $('card_secret').classList.remove('show');
   $('pwWrap').classList.remove('show'); $('pwWrap').style.display='none';
+
+  const kdbox=$('kodaDbox'),kname=$('k_name'),ktext=$('k_text'),kport=$('k_portrait');
+loadContain(kport,'koda_upperbody.png','코다 상체');
+const kodaLines=[
+  "…스나. 그 이름, 오랜만에 듣네.",
+  "네가 그 이름을 기억한다면, 얘기가 달라져.",
+  "나는 여기서 20년을 셔터만 누르고 있었어.",
+  "찍어도 찍어도, 아무것도 남지 않았어.",
+  "네가 찾는 사람은 이 학교에 없어. 집에 있어.",
+  playerName+". 이제 진짜를 볼 시간이야."
+];
+let kStep=0,kActive=false;
+function kodaMessage(){
+  $('pwWrap').classList.remove('show'); $('pwWrap').style.display='none';
+  kActive=true; kStep=0;
+  kdbox.classList.add('show','has-portrait'); kport.classList.add('show');
+  ktext_type(kodaLines[0]);
+}
+function ktext_type(text){
+  kname.textContent='코다'; ktext.textContent='';
+  let i=0; clearInterval(ktext_type._t);
+  ktext_type._t=setInterval(()=>{ ktext.textContent=text.slice(0,++i); if(i>=text.length)clearInterval(ktext_type._t); },26);
+}
+$('kodaDbox').addEventListener('click',()=>{
+  if(!kActive)return; kStep++;
+  if(kStep<kodaLines.length){ ktext_type(kodaLines[kStep]); }
+  else{ kdbox.classList.remove('show'); kport.classList.remove('show'); kActive=false; revealTruth(); }
+});
 
   // 하이나기 탭 → 진실 버전 스탠딩 + 상세 프로필
   loadContain($('stand_hinagi'),'hainagi_real.png','하이나기(진실)');

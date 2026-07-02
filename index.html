@@ -81,7 +81,7 @@
   /* 옥상 배경 확대 — 너른 배율이라 확대해도 안 커 보임 */
   #roofBg{position:absolute;inset:0;transform:scale(1.6);transform-origin:center bottom}
   #i_player{left:-20%;z-index:3;width:56px;height:120px;bottom:14%}
-  #i_hinagi{left:64%;z-index:2;opacity:0;width:90px;height:180px;bottom:14%}
+  #i_hinagi{left:96%;z-index:2;width:90px;height:180px;bottom:14%}
 
   /* 인트로 대사창 — 크기 2/3로 축소, 텍스트 작게, 하단에 얇게 */
 #introDbox{
@@ -94,8 +94,8 @@
 #introDbox .dtext{ font-size:12px; min-height:0; line-height:1.5; }
 #introDbox .dname{ font-size:10.5px; }
 #introDbox .dhint{ font-size:9px; }
-#introDbox.has-portrait{ padding-right:13px; }
-#introDbox .portrait{ display:none; }
+#introDbox.has-portrait{ padding-right:96px; }
+#introDbox .portrait{ display:block; width:84px; height:120px; right:8px; }
   
   #nameWrap{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);
     z-index:40;display:none;flex-direction:column;gap:13px;align-items:center;
@@ -390,7 +390,7 @@
   <div id="lyricsPanel">
     <div id="lyricsHead">
       <div><div id="lyricsTitle">Inside The Glass</div>
-        <div id="lyricsBy">睡蓮女学校 · original theme</div></div>
+        <div id="lyricsBy">ORIGINAL SOUNDTRACK</div></div>
       <div id="lyricsClose">✕ 닫기</div>
     </div>
     <div id="lyricsBody"></div>
@@ -406,7 +406,7 @@
 <audio id="wind" loop preload="auto"></audio>
 
 <script>
-const REPO="https://github.com/yermigionic-web/tochka/raw/refs/heads/main/";
+const REPO="https://raw.githubusercontent.com/yermigionic-web/tochka/main/";
 const $=id=>document.getElementById(id);
 const stage=$('stage');
 
@@ -520,17 +520,15 @@ function isay(name,text,portrait){
 let iStep=0;
 const iSeq=[
   ()=>isay('','옥상 문이, 잠겨 있었는데도 열려 있다.'),
-  ()=>{ $('i_player').style.transition='left 2.4s linear'; $('i_player').style.left='12%'; },
+  ()=>{ $('i_player').style.transition='left 2.4s linear'; $('i_player').style.left='38%'; },
   ()=>isay('','바람이 없다. 그런데 물비린내가 난다.'),
   ()=>{ cue.classList.remove('show'); idbox.classList.remove('show');
-  // 플레이어는 중앙으로, 배경과 하이나기는 왼쪽으로 밀림(=플레이어가 전진하는 효과)
-  $('i_player').style.left='42%';
+  // 플레이어는 제자리 고정, 배경+하이나기가 왼쪽으로 밀리며 하이나기가 화면에 들어옴
   $('roofBg').style.transition='transform 3.4s linear';
   $('roofBg').style.transform='scale(1.6) translateX(-18%)';
-  $('i_hinagi').style.transition='left 3.4s linear,opacity 1s';
-  $('i_hinagi').style.left='58%';
-  setTimeout(()=>$('i_hinagi').style.opacity='1',800);
-  setTimeout(()=>{ iStep=4; iSeq[4](); },2600); },
+  $('i_hinagi').style.transition='left 3.4s linear';
+  $('i_hinagi').style.left='72%';
+  setTimeout(()=>{ iStep=4; iSeq[4](); },2600); },,
   ()=>{ $('wind').volume=0; fadeAudio($('wind'),0.4,2200);
     isay('???','…왔네.',true); cue.classList.add('show'); },
   ()=>{ isay('???','네 이름은 뭐야?',true);
@@ -553,6 +551,9 @@ function confirmName(){
   const v=$('nameInput').value.trim(); if(!v)return;
   playerName=v; $('nameWrap').classList.remove('show'); iStep=100;
   isay(playerName+'…','잊어버렸어? 나는, 네 여자친구야.',true);
+  // 하이나기 스탠딩 좌우반전 (위치 그대로, 이미지만 뒤집기)
+  const hn=$('i_hinagi').querySelector('img');
+  if(hn) hn.style.transform='scaleX(-1)';
   cue.classList.add('show');
   setTimeout(()=>{ $('s_intro').addEventListener('click',exitTogether,{once:true}); }, 300);
 }
@@ -587,7 +588,7 @@ const captions=[
   "",
   playerNameHolder(),
   "",
-  "이건 행복한 기억이야. 그렇게 믿기로 했어."
+  "이건 행복한 기억이야."
 ];
 function playerNameHolder(){ return "네가 준 이름을, 나는 아직 쥐고 있어."; }
 for(let i=1;i<=CUTS;i++){
@@ -597,7 +598,7 @@ for(let i=1;i<=CUTS;i++){
   img.onerror=()=>{ d.innerHTML=`<div class="ph"><b>CUT ${i}</b>${file}</div>`; };
   img.src=REPO+file; cutLayer.appendChild(d);
 }
-let cIdx=0,cTimer=null,cRun=false; const CUT_MS=3000;
+let cIdx=0,cTimer=null,cRun=false; const CUT_MS=1900;
 function showCut(n){
   document.querySelectorAll('.cut').forEach(c=>c.classList.remove('on'));
   const c=$('cut'+n); if(c)c.classList.add('on');
@@ -640,7 +641,7 @@ const memories=[
   ["네 번째 문","하이나기",[
     "축제 날, 우리 무대는 마지막 순서였어.",
     "객석을 비춘 불이 하나둘 꺼지고 나면.",
-    "네 목소리만 남아서 머릿속에 물속처럼 울렸어.",
+    "네 목소리만 남아서 물속처럼 울렸어.",
     "나는 그 순간을 병에 담아두고 싶었어.",
     "영원히 흐려지지 않게.",
     "네가 내 이름을, 영원히 불러 줄 수 있게."
@@ -794,28 +795,24 @@ function erodeKoda(){
   setTimeout(()=>{ $('pwInput').value=''; $('pwMsg').textContent=''; $('pwMsg').style.color='var(--rot)'; },3200);
 }
 
-/* 진짜 답 → 전체 프로필 진실 버전으로 전환 */
-function revealTruth(){
-  // ??? 탭 완전히 제거
-  const secretTab=document.querySelector('.tab[data-tab="secret"]');
-  if(secretTab)secretTab.remove();
-  $('card_secret').classList.remove('show');
-  $('pwWrap').classList.remove('show'); $('pwWrap').style.display='none';
-
-  const kdbox=$('kodaDbox'),kname=$('k_name'),ktext=$('k_text'),kport=$('k_portrait');
+const kdbox=$('kodaDbox'),kname=$('k_name'),ktext=$('k_text'),kport=$('k_portrait');
 loadContain(kport,'koda_upperbody.png','코다 상체');
-const kodaLines=[
-  "…스나. 그 이름, 오랜만에 듣네.",
-  "네가 그 이름을 기억한다면, 얘기가 달라져.",
-  "나는 여기서 20년을 셔터만 누르고 있었어.",
-  "찍어도 찍어도, 아무것도 남지 않았어.",
-  "네가 찾는 사람은 이 학교에 없어. 집에 있어.",
-  playerName+". 이제 진짜를 볼 시간이야."
-];
+function buildKodaLines(){ return [
+  "…기억하는구나.",
+  playerName+", 정말로 보고 싶어.",
+  "멋대로 하이나기의 일기를 읽어 버린 내 잘못이었을까? 아니면 내 여자친구를 좋아한 하이나기의 잘못이었을까?",
+  "어느 쪽이든, 지금은 전부 반성했을 거라고 믿어. 네게 닿고 싶지만, 이제는 나도 떠나가야겠지.",
+  "그러니까 하이나기를 너무 미워하지 마, "+playerName+".",
+  "내가 혼낼게. 함께 갈 수 있게 되면 반성문이라도 쓰게 할 테니까, 슬픔에 시간을 쓰지 마.",
+  "네가 내 마지막 여자친구여서, 정말 다행이야."
+]; }
+let kodaLines=[];
 let kStep=0,kActive=false;
+kodaLines=buildKodaLines();
 function kodaMessage(){
   $('pwWrap').classList.remove('show'); $('pwWrap').style.display='none';
   kActive=true; kStep=0;
+  kodaLines=buildKodaLines();          // ← 이 줄 추가: 지금의 playerName으로 대사 생성
   kdbox.classList.add('show','has-portrait'); kport.classList.add('show');
   ktext_type(kodaLines[0]);
 }
@@ -830,10 +827,18 @@ $('kodaDbox').addEventListener('click',()=>{
   else{ kdbox.classList.remove('show'); kport.classList.remove('show'); kActive=false; revealTruth(); }
 });
 
+/* 진짜 답 → 전체 프로필 진실 버전으로 전환 */
+function revealTruth(){
+  // ??? 탭 완전히 제거
+  const secretTab=document.querySelector('.tab[data-tab="secret"]');
+  if(secretTab)secretTab.remove();
+  $('card_secret').classList.remove('show');
+  $('pwWrap').classList.remove('show'); $('pwWrap').style.display='none';
+
   // 하이나기 탭 → 진실 버전 스탠딩 + 상세 프로필
   loadContain($('stand_hinagi'),'hainagi_real.png','하이나기(진실)');
   document.querySelector('.tab[data-tab="hinagi"]').innerHTML='倖田灰凪';
-  $('desc_hinagi').textContent="倖田灰凪. 너를 아주 오래 미워했다. 그러다 네 무대를 본 날, 미워하던 마음이 뒤집혔다. 스스로도 그 감정을 견디지 못했다. 어항의 물은 이제 맑아지지 않는다. 그녀가 새긴 기억들은, 전부 물 위에 그린 그림이었다. "+playerName+"의 여자친구를 자처했지만, 그 자리에 원래 있던 사람은 따로 있다.";
+  $('desc_hinagi').textContent="본명은 코다 하이나기. 언니와, 그 언니가 좋아하는 너를 아주 오래 미워했다. 그러다 네 무대를 본 날 미워하던 마음이 뒤집혔다. 스스로도 그 감정을 견디지 못할 것만 같았다. 어항의 물은 이제 영영 맑아지지 않는다. 그녀가 새긴 기억들은, 전부 물 위에 그린 그림이었다. "+playerName+"의 여자친구를 자처했지만, 그 자리에 원래 있던 사람은 따로 있다. 배구부로 활동했으나 몸이 튼튼하지 못한 체질이라 자주 넘어졌고, 무릎에는 멍과 상처가 가실 날이 없었다.";
   document.querySelector('#card_hinagi .pmeta').textContent='2학년 · 灰凪 · 물 위에 그린 기억';
 
   // 코다 탭 → 스나의 진실 프로필로 전환
@@ -841,7 +846,7 @@ $('kodaDbox').addEventListener('click',()=>{
   document.querySelector('.tab[data-tab="koda"]').innerHTML='倖田砂';
   document.querySelector('#card_koda .pname').innerHTML='倖田 砂 <span style="font-size:13px;color:var(--violet)">코다 스나</span>';
   document.querySelector('#card_koda .pmeta').textContent='3학년 · '+playerName+'의 진짜 여자친구';
-  $('desc_koda').textContent="너를 이 학교로, 이 부로 이끈 사람. "+playerName+" 앞에서만 깨진 마음을 숨기지 않았다. 렌즈 안쪽엔 검은 기름이 고여 있다. 네가 이름을 부르면, 고장 난 셔터가 제멋대로 울린다. 그녀는 지금 여기에 없고, 어디에 있는지는 물속처럼 잠겨 있다.";
+  $('desc_koda').textContent="너를 이 학교로, 이 부로 이끈 사람. 까질하게 보이지만, "+playerName+" 앞에서만 자신의 마음을 숨기지 않았다. 제일 아끼는 물건은 자신의 베이스에 달린 금붕어 키링과, "+playerName+"의 사진이 잔뜩 찍혀 있는 디지털 카메라. 동생을 진심으로 아끼고 있다. 좋아하는 밴드는 LET ME KNOW. 통화할 때 매번 불렀는데, 핀잔을 주면 능청을 떨지만 사실 쑥쓰러워했다.";
 
   // 하이나기 탭으로 전환해서 변화를 먼저 보여줌
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));

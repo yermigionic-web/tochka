@@ -83,6 +83,20 @@
   #i_player{left:-20%;z-index:3;width:56px;height:120px;bottom:14%}
   #i_hinagi{left:64%;z-index:2;opacity:0;width:90px;height:180px;bottom:14%}
 
+  /* 인트로 대사창 — 크기 2/3로 축소, 텍스트 작게, 하단에 얇게 */
+#introDbox{
+  left:10px; right:10px; bottom:8px;
+  min-height:0;
+  padding:9px 13px;
+  gap:4px;
+  border-width:2px;
+}
+#introDbox .dtext{ font-size:12px; min-height:0; line-height:1.5; }
+#introDbox .dname{ font-size:10.5px; }
+#introDbox .dhint{ font-size:9px; }
+#introDbox.has-portrait{ padding-right:13px; }
+#introDbox .portrait{ display:none; }
+  
   #nameWrap{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);
     z-index:40;display:none;flex-direction:column;gap:13px;align-items:center;
     background:rgba(12,22,28,.96);border:3px solid var(--box-edge);padding:26px 30px;
@@ -516,7 +530,7 @@ const iSeq=[
   $('i_hinagi').style.transition='left 3.4s linear,opacity 1s';
   $('i_hinagi').style.left='58%';
   setTimeout(()=>$('i_hinagi').style.opacity='1',800);
-  setTimeout(()=>{ iStep=3; iSeq[3](); },2600); },
+  setTimeout(()=>{ iStep=4; iSeq[4](); },2600); },
   ()=>{ $('wind').volume=0; fadeAudio($('wind'),0.4,2200);
     isay('???','…왔네.',true); cue.classList.add('show'); },
   ()=>{ isay('???','네 이름은 뭐야?',true);
@@ -528,8 +542,8 @@ $('s_intro').addEventListener('click',e=>{
   if(iStep>=99)return;
   if($('titleScreen').classList.contains('show'))return;
   if(e.target.closest('#nameWrap'))return;
-  if(iStep===2)return;                       // 걷기 자동
-  const cur=iStep; iStep++; if(iSeq[cur+1]&&cur+1!==2){} 
+  if(iStep===3)return;                       // 인덱스3=걷기 자동, 클릭 무시
+  iStep++;
   if(iSeq[iStep])iSeq[iStep]();
 });
 window.addEventListener('load',()=>setTimeout(()=>{ $('fade').classList.add('clear'); iSeq[0](); },500));
